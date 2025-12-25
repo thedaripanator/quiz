@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Result</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* reuse SAME CSS you already wrote */
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #f5f7f7, #eef2f3);
+      min-height: 100vh;
+      color: #0a1a1f;
+    }
+    
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #1a9e8c, #2a8a9e);
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 40px rgba(26, 158, 140, 0.3);
+    }
+    
+    .icon svg { width: 32px; height: 32px; color: white; }
+    
+    .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .header p { color: #5a6a70; }
+    
+    .progress-container { margin-bottom: 2rem; }
+    
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .progress-info span:first-child { color: #5a6a70; }
+    .progress-info span:last-child { color: #1a9e8c; font-weight: 600; }
+    
+    .progress-bar {
+      height: 8px;
+      background: #e0e5e7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #1a9e8c, #2a8a9e);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    
+    .quiz-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px -4px rgba(10, 26, 31, 0.1);
+      border: 1px solid rgba(214, 222, 225, 0.5);
+    }
+    
+    .question-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(26, 158, 140, 0.1);
+      color: #1a9e8c;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 2rem;
+    }
+    
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+    
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: white;
+      border: 2px solid #e0e5e7;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .option-btn:hover:not(:disabled) {
+      border-color: #1a9e8c;
+      background: rgba(26, 158, 140, 0.05);
+      box-shadow: 0 0 40px rgba(26, 158, 140, 0.2);
+    }
+    
+    .option-btn:disabled { cursor: not-allowed; }
+    
+    .option-btn.selected { border-color: #1a9e8c; background: rgba(26, 158, 140, 0.1); }
+    .option-btn.correct { border-color: #22a55b; background: rgba(34, 165, 91, 0.1); }
+    .option-btn.wrong { border-color: #dc4545; background: rgba(220, 69, 69, 0.1); }
+    
+    .option-label {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e0e5e7;
+      border-radius: 0.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .option-btn:hover:not(:disabled) .option-label { background: #1a9e8c; color: white; }
+    .option-btn.correct .option-label { background: #22a55b; color: white; }
+    .option-btn.wrong .option-label { background: #dc4545; color: white; }
+    
+    .score-indicator {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 1px solid rgba(214, 222, 225, 0.5);
+      border-radius: 999px;
+      font-size: 0.875rem;
+      color: #5a6a70;
+    }
+    
+    .score-badge strong { color: #1a9e8c; }
+    
+    /* Results */
+    .results { text-align: center; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .trophy-icon {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a9e8c, #2a8a9e);
+      box-shadow: 0 0 40px rgba(26, 158, 140, 0.3);
+    }
+    
+    .trophy-icon.low { background: #e0e5e7; box-shadow: none; }
+    .trophy-icon svg { width: 64px; height: 64px; color: white; }
+    .trophy-icon.low svg { color: #5a6a70; }
+    
+    .score-display { margin-bottom: 1.5rem; }
+    .score-display .big { font-size: 4rem; font-weight: 700; }
+    .score-display .total { font-size: 2rem; color: #5a6a70; }
+    
+    .message h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .message p { color: #5a6a70; margin-bottom: 2rem; }
+    
+    .score-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .breakdown-card {
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid;
+    }
+    
+    .breakdown-card.correct {
+      background: rgba(34, 165, 91, 0.1);
+      border-color: rgba(34, 165, 91, 0.2);
+    }
+    
+    .breakdown-card.incorrect {
+      background: rgba(220, 69, 69, 0.1);
+      border-color: rgba(220, 69, 69, 0.2);
+    }
+    
+    .breakdown-card p:first-child {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    .breakdown-card.correct p:first-child { color: #22a55b; }
+    .breakdown-card.incorrect p:first-child { color: #dc4545; }
+    .breakdown-card p:last-child { font-size: 0.875rem; color: #5a6a70; }
+    
+    .restart-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, #1a9e8c, #2a8a9e);
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 40px rgba(26, 158, 140, 0.3);
+      transition: opacity 0.3s ease;
+    }
+    
+    .restart-btn:hover { opacity: 0.9; }
+    .restart-btn svg { width: 20px; height: 20px; }
+    
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body>
+<div class="container results">
+
+  <div class="trophy-icon">
+    🏆
+  </div>
+
+  <div class="score-display">
+    <span class="big" th:text="${score}"></span>
+    <span class="total">/ <span th:text="${total}"></span></span>
+  </div>
+
+  <div class="message">
+    <h2>Quiz Completed 🎉</h2>
+    <p>Great effort!</p>
+  </div>
+
+  <a href="/" class="restart-btn">Restart Quiz</a>
+
+</div>
+</body>
+</html>
