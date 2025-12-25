@@ -22,7 +22,8 @@ public class AdminController {
 
     @GetMapping
     public String adminPage(Model model) {
-        model.addAttribute("question", new Question()); // REQUIRED for binding
+        model.addAttribute("question", new Question());
+        model.addAttribute("questionCount", quizService.getQuestionCount());
         return "admin";
     }
 

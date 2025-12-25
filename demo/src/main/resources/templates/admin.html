@@ -53,6 +53,11 @@
 
 <div class="card">
     <h2>Admin – Add Question</h2>
+    <p style="text-align:center; font-weight:bold;">
+  Total Questions Available:
+  <span th:text="${questionCount}"></span>
+</p>
+
 
     <form th:action="@{/admin/add}" th:object="${question}" method="post">
         <input type="text" th:field="*{questionText}" placeholder="Question" required>

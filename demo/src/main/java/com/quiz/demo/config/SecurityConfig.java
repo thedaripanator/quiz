@@ -15,12 +15,20 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                // USER endpoints (PUBLIC)
-                .requestMatchers("/", "/submit", "/css/**").permitAll()
+                // ✅ USER PAGES (PUBLIC)
+                .requestMatchers(
+                    "/", 
+                    "/start",
+                    "/quiz",
+                    "/submit",
+                    "/question/**",   // ⭐ REQUIRED FOR NAVIGATOR
+                    "/css/**"
+                ).permitAll()
 
-                // ADMIN endpoints (PROTECTED)
+                // 🔒 ADMIN PAGES
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
+                // ❗ Everything else needs auth
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
