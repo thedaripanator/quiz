@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Result Review</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: Inter, sans-serif;
+  background: #f4f6f8;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 20px rgba(0,0,0,.1);
+}
+
+.question {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.option {
+  padding: .6rem .8rem;
+  border-radius: 6px;
+  margin-bottom: .4rem;
+}
+
+.correct {
+  background: rgba(34,165,91,.15);
+  border-left: 5px solid #22a55b;
+}
+
+.wrong {
+  background: rgba(220,69,69,.15);
+  border-left: 5px solid #dc4545;
+}
+
+.neutral {
+  background: #f1f3f4;
+}
+
+.badge {
+  display: inline-block;
+  padding: .3rem .6rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  margin-top: .5rem;
+}
+
+.badge.correct { background:#22a55b;color:white }
+.badge.wrong { background:#dc4545;color:white }
+.badge.skip { background:#999;color:white }
+
+.actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.actions a {
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  background: #1a9e8c;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Quiz Review</h1>
+
+<div th:each="q, stat : ${questions}" class="card">
+
+  <div class="question">
+    Q<span th:text="${stat.index + 1}"></span>.
+    <span th:text="${q.questionText}"></span>
+  </div>
+
+  <div class="option"
+       th:classappend="${q.correctAnswer == 1} ? ' correct' :
+                       (${answers[stat.index]} == 1 ? ' wrong' : ' neutral')">
+    A. <span th:text="${q.option1}"></span>
+  </div>
+
+  <div class="option"
+       th:classappend="${q.correctAnswer == 2} ? ' correct' :
+                       (${answers[stat.index]} == 2 ? ' wrong' : ' neutral')">
+    B. <span th:text="${q.option2}"></span>
+  </div>
+
+  <div class="option"
+       th:classappend="${q.correctAnswer == 3} ? ' correct' :
+                       (${answers[stat.index]} == 3 ? ' wrong' : ' neutral')">
+    C. <span th:text="${q.option3}"></span>
+  </div>
+
+  <div class="option"
+       th:classappend="${q.correctAnswer == 4} ? ' correct' :
+                       (${answers[stat.index]} == 4 ? ' wrong' : ' neutral')">
+    D. <span th:text="${q.option4}"></span>
+  </div>
+
+  <span class="badge correct"
+        th:if="${answers[stat.index]} == q.correctAnswer}">
+        Correct
+  </span>
+
+  <span class="badge wrong"
+        th:if="${answers[stat.index]} != null and answers[stat.index] != q.correctAnswer}">
+        Incorrect
+  </span>
+
+  <span class="badge skip"
+        th:if="${answers[stat.index]} == null}">
+        Not Attempted
+  </span>
+
+</div>
+
+<div class="actions">
+  <a href="/start">Back to Home</a>
+</div>
+
+</div>
+</body>
+</html>

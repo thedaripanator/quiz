@@ -1,5 +1,6 @@
 package com.quiz.demo.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ public class QuizService {
 
     // Quiz runtime data
     private List<Question> questions;
+    private List<Integer> answers;      // stores selected options
     private int currentIndex;
     private int score;
 
@@ -29,27 +31,22 @@ public class QuizService {
 
     /* ===================== ADMIN METHODS ===================== */
 
-    // Add / Update question
     public Question saveQuestion(Question question) {
         return repository.save(question);
     }
 
-    // Count questions
     public long getQuestionCount() {
         return repository.count();
     }
 
-    // Get all questions
     public List<Question> getAllQuestions() {
         return repository.findAll();
     }
 
-    // Get question by ID
     public Question getQuestionById(int id) {
         return repository.findById(id).orElse(null);
     }
 
-    // Delete question
     public void deleteQuestion(int id) {
         repository.deleteById(id);
     }
@@ -61,6 +58,12 @@ public class QuizService {
         currentIndex = 0;
         score = 0;
         attemptedQuestions.clear();
+
+        // initialize answers list
+        answers = new ArrayList<>();
+        for (@SuppressWarnings("unused") Question question : questions) {
+            answers.add(null);
+        }
     }
 
     public Question getCurrentQuestion() {
@@ -69,6 +72,8 @@ public class QuizService {
 
     public void submitAnswer(int option) {
         attemptedQuestions.add(currentIndex);
+        answers.set(currentIndex, option);
+
         if (option == questions.get(currentIndex).getCorrectAnswer()) {
             score++;
         }
@@ -89,7 +94,7 @@ public class QuizService {
     }
 
     public void goToPrevious() {
-        if (currentIndex > 0) {
+        if (hasPrevious()) {
             currentIndex--;
         }
     }
@@ -99,6 +104,8 @@ public class QuizService {
             currentIndex = index;
         }
     }
+
+    /* ===================== GETTERS ===================== */
 
     public int getCurrentIndex() {
         return currentIndex;
@@ -115,4 +122,13 @@ public class QuizService {
     public Set<Integer> getAttemptedQuestions() {
         return attemptedQuestions;
     }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public List<Integer> getAnswers() {
+        return answers;
+    }
+
 }

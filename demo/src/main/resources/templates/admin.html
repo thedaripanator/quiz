@@ -1,120 +1,105 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
 <title>Admin Panel</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  padding: 2rem;
+body{
+  font-family:Inter,Arial;
+  background:#f5f7f7;
 }
-.container {
-  max-width: 1000px;
-  margin: auto;
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:2rem;
 }
-h1 { margin-bottom: 1rem; }
-
-.card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.card{
+  background:white;
+  padding:1.5rem;
+  border-radius:10px;
+  margin-bottom:2rem;
 }
-
-input, button {
-  padding: .6rem;
-  margin: .3rem 0;
-  width: 100%;
+h2{margin-bottom:1rem}
+input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
 }
-
-button {
-  background: #1a9e8c;
-  color: white;
-  border: none;
-  cursor: pointer;
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
+.save{background:#1a9e8c;color:white}
+.edit{background:#2a8a9e;color:white}
+.delete{background:#dc4545;color:white}
+table{
+  width:100%;
+  border-collapse:collapse;
 }
-
-th, td {
-  padding: .6rem;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
 }
-
-.actions a {
-  margin-right: .5rem;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.edit { color: #1a9e8c; }
-.delete { color: red; }
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<h1>Admin Panel</h1>
-<p>Total Questions: <b th:text="${questionCount}"></b></p>
+<!-- HEADER -->
+<div class="card">
+  <h2>Admin Dashboard</h2>
+  <p>Total Questions: <strong th:text="${questionCount}"></strong></p>
+  <a href="/logout">Logout</a>
+</div>
 
 <!-- ADD / EDIT FORM -->
 <div class="card">
-<h2 th:text="${question.id == null ? 'Add Question' : 'Edit Question'}"></h2>
+  <h2 th:text="${question.id == null ? 'Add Question' : 'Edit Question'}"></h2>
 
-<form th:action="@{/admin/save}" th:object="${question}" method="post">
+  <form th:action="@{/admin/save}" method="post" th:object="${question}">
+    <input type="hidden" th:field="*{id}">
 
-  <!-- IMPORTANT: Hidden ID for edit -->
-  <input type="hidden" th:field="*{id}"/>
+    <input type="text" th:field="*{questionText}" placeholder="Question" required>
+    <input type="text" th:field="*{option1}" placeholder="Option 1" required>
+    <input type="text" th:field="*{option2}" placeholder="Option 2" required>
+    <input type="text" th:field="*{option3}" placeholder="Option 3" required>
+    <input type="text" th:field="*{option4}" placeholder="Option 4" required>
+    <input type="number" th:field="*{correctAnswer}" min="1" max="4" placeholder="Correct Option (1-4)" required>
 
-  <input type="text" th:field="*{questionText}" placeholder="Question" required>
-  <input type="text" th:field="*{option1}" placeholder="Option 1" required>
-  <input type="text" th:field="*{option2}" placeholder="Option 2" required>
-  <input type="text" th:field="*{option3}" placeholder="Option 3" required>
-  <input type="text" th:field="*{option4}" placeholder="Option 4" required>
-  <input type="number" th:field="*{correctAnswer}" min="1" max="4" placeholder="Correct Option (1–4)" required>
-
-  <button type="submit">
-    <span th:text="${question.id == null ? 'Add Question' : 'Update Question'}"></span>
-  </button>
-</form>
+    <button class="save" type="submit">Save</button>
+  </form>
 </div>
 
 <!-- QUESTION LIST -->
 <div class="card">
-<h2>All Questions</h2>
+  <h2>All Questions</h2>
 
-<table>
-<thead>
-<tr>
-  <th>#</th>
-  <th>Question</th>
-  <th>Correct</th>
-  <th>Actions</th>
-</tr>
-</thead>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Question</th>
+      <th>Correct</th>
+      <th>Actions</th>
+    </tr>
 
-<tbody>
-<tr th:each="q, stat : ${questions}">
-  <td th:text="${stat.count}"></td>
-  <td th:text="${q.questionText}"></td>
-  <td th:text="${q.correctAnswer}"></td>
-  <td class="actions">
-    <a th:href="@{/admin/edit/{id}(id=${q.id})}" class="edit">Edit</a>
-    <a th:href="@{/admin/delete/{id}(id=${q.id})}"
-       class="delete"
-       onclick="return confirm('Delete this question?')">Delete</a>
-  </td>
-</tr>
-</tbody>
-</table>
+    <tr th:each="q : ${questions}">
+      <td th:text="${q.id}"></td>
+      <td th:text="${q.questionText}"></td>
+      <td th:text="${q.correctAnswer}"></td>
+      <td>
+        <a th:href="@{/admin/edit/{id}(id=${q.id})}">
+          <button class="edit">Edit</button>
+        </a>
+        <a th:href="@{/admin/delete/{id}(id=${q.id})}"
+           onclick="return confirm('Delete this question?')">
+          <button class="delete">Delete</button>
+        </a>
+      </td>
+    </tr>
+  </table>
 </div>
 
 </div>

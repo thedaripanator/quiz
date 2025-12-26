@@ -14,35 +14,45 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            .csrf(csrf -> csrf.disable())
+
             .authorizeHttpRequests(auth -> auth
-                // ✅ USER PAGES (PUBLIC)
+
+                // ✅ PUBLIC QUIZ FLOW (NO LOGIN EVER)
                 .requestMatchers(
-                    "/", 
+                    "/",
                     "/start",
-                    "/quiz",
                     "/submit",
-                    "/question/**",   // ⭐ REQUIRED FOR NAVIGATOR
+                    "/question/**",
+                    "/previous",
+                    "/result",
+                    "/result-review",
                     "/css/**"
                 ).permitAll()
 
-                // 🔒 ADMIN PAGES
+                // 🔒 ADMIN ONLY
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // ❗ Everything else needs auth
+                // ❗ everything else requires auth
                 .anyRequest().authenticated()
             )
+
+            // 🔐 ADMIN LOGIN ONLY
             .formLogin(form -> form
+                .loginPage("/login")
                 .defaultSuccessUrl("/admin", true)
                 .permitAll()
             )
+
             .logout(logout -> logout
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/start")
                 .permitAll()
             );
 
         return http.build();
     }
 
+    // 🔑 THIS WAS MISSING — REQUIRED
     @Bean
     public InMemoryUserDetailsManager users() {
         return new InMemoryUserDetailsManager(
